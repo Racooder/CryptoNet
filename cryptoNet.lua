@@ -1,3 +1,4 @@
+---@diagnostic disable: duplicate-set-field, cast-local-type, undefined-global, undefined-field, need-check-nil
 -- CryptoNet Networking Framework by SiliconSloth
 -- Licensed under the MIT license.
 --
@@ -99,7 +100,7 @@ sha256.band    = bit32 and bit32.band or bit.band
 sha256.bnot    = bit32 and bit32.bnot or bit.bnot
 sha256.bxor    = bit32 and bit32.bxor or bit.bxor
 sha256.blshift = bit32 and bit32.lshift or bit.blshift
-sha256.upack   = unpack
+sha256.upack   = table.unpack
 
 sha256.rrotate = function (n, b)
 	local s = n/(2^b)
@@ -186,9 +187,9 @@ sha256.digestblock = function (w, C)
 end
 
 sha256.mt = {
-	__tostring = function(a) return string.char(unpack(a)) end,
+	__tostring = function(a) return string.char(table.unpack(a)) end,
 	__index = {
-		toHex = function(self, s) return ("%02x"):rep(#self):format(unpack(self)) end,
+		toHex = function(self, s) return ("%02x"):rep(#self):format(table.unpack(self)) end,
 		isEqual = function(self, t)
 			if type(t) ~= "table" then return false end
 			if #self ~= #t then return false end
@@ -767,7 +768,7 @@ rsaCrypt.mod = function (a, m)
 end
 
 rsaCrypt.printscale = 10000000
-rsaCrypt.printscalefmt = string.format("%%.%dd", math.log10(rsaCrypt.printscale))
+rsaCrypt.printscalefmt = string.format("%%.%dd", math.log(rsaCrypt.printscale, 10))
 rsaCrypt.makestr = function (bi, s)
 	if bi >= rsaCrypt.bigint(rsaCrypt.printscale) then
 		rsaCrypt.makestr(rsaCrypt.divint(bi, rsaCrypt.printscale), s)
@@ -2733,7 +2734,7 @@ threadAPI.tickAll = function ()
 	end
 	local dead = nil
 	for k,v in ipairs(threadAPI.threads) do
-		threadAPI.tick(v, unpack(e))
+		threadAPI.tick(v, table.unpack(e))
 		if v.dead then
 			if dead == nil then dead = {} end
 			table.insert(dead, k - #dead)
