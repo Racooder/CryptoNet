@@ -5014,12 +5014,12 @@ function cryptoNet.setWorkingDirectory(dir)
 	workingDir = dir
 end
 
---- @return table<server>
+--- @return table<Server>
 function cryptoNet.getAllServers()
 	return allServers
 end
 
---- @return table<socket>
+--- @return table<Socket>
 function cryptoNet.getAllClientSockets()
 	return allClientSockets
 end
@@ -5272,7 +5272,7 @@ end
 
 
 --- Serialize a certificate or RSA key into a string, for saving to a file. The textutils functions don't seem to like the huge strings of numbers in the keys, so quotation marks must be added to them before serialization, which is what this function does.
---- @param obj certificate|key|nil
+--- @param obj Certificate|Key|nil
 --- @return string
 function cryptoNet.serializeCertOrKey(obj)
 	if type(obj) ~= "table" then
@@ -5318,7 +5318,7 @@ end
 
 --- Deserialize certificates or RSA keys serialized by serializeCertOrKey(). This involves deserializing as normal and removing the quotation marks added during serialization.
 --- @param str string
---- @return certificate|key|nil
+--- @return Certificate|Key|nil
 function cryptoNet.deserializeCertOrKey(str)
 	if str == nil then return nil end
 	-- Deserialize as normal.
@@ -5375,7 +5375,7 @@ end
 
 --- Generate an unsigned certificate and corresponding private key for a server with the given name. The certificate is distributed to clients, who can use the public key it contains to encrypt messages using RSA such that only this server can read them, using the private key.
 --- @param name string
---- @return certificate, privateKey
+--- @return Certificate, PrivateKey
 function cryptoNet.generateCertificate(name)
 	log("Generating keys... (may take some time)")
 	local publicKey, privateKey = rsaKeygen.generateKeyPair()
@@ -5386,8 +5386,8 @@ function cryptoNet.generateCertificate(name)
 end
 
 --- Load a certificate authority public key from the specified file and validate it, or just validate the key itself if passed directly as the argument. If key is left nil, a default filename of "certAuth.key" is used.
---- @param key? string|publicKey (default: "certAuth.key") The file to load the key from, or the key itself to validate.
---- @return certificate|key|nil
+--- @param key? string|PublicKey (default: "certAuth.key") The file to load the key from, or the key itself to validate.
+--- @return Certificate|Key|nil
 function cryptoNet.loadCertAuthKey(key)
 	if key == nil then
 		-- Default value.
@@ -5430,8 +5430,8 @@ function cryptoNet.loadCertAuthKey(key)
 end
 
 --- Verify that the signature on a certificate is valid, using the public key of the trusted certificate authority.
---- @param certificate certificate
---- @param key publicKey
+--- @param certificate Certificate
+--- @param key PublicKey
 --- @return boolean
 function cryptoNet.verifyCertificate(certificate, key)
 	-- Signatures are made by encrypting the certificate's hash using the cert auth's private key.
@@ -5500,7 +5500,7 @@ end
 
 
 --- Send an encrypted message over the given socket. The message can be pretty much any Lua data type.
---- @param socket socket
+--- @param socket Socket
 --- @param message any
 function cryptoNet.send(socket, message)
 	if not cryptoNet.socketValid(socket) then
@@ -5512,7 +5512,7 @@ function cryptoNet.send(socket, message)
 end
 
 --- Send an unencrypted message over CryptoNet. Useful for streams of high speed, non-sensitive data. Unencrypted messages have no security features applied, so can be easily exploited by attackers. Only use for non-critical messages.
---- @param socket socket
+--- @param socket Socket
 --- @param message string
 function cryptoNet.sendUnencrypted(socket, message)
 	if not cryptoNet.socketValid(socket) then
@@ -5597,7 +5597,7 @@ end
 --- @param username string
 --- @param passHash string
 --- @param permissionLevel? number
---- @param server? server
+--- @param server? Server
 function cryptoNet.addUserHashed(username, passHash, permissionLevel, server)
 	if type(username) ~= "string" then
 		error("Username must be a string.", 2)
@@ -5642,7 +5642,7 @@ end
 --- @param username string
 --- @param password string
 --- @param permissionLevel? number
---- @param server? server
+--- @param server? Server
 function cryptoNet.addUser(username, password, permissionLevel, server)
 	if type(username) ~= "string" then
 		error("Username must be a string.", 2)
@@ -5681,7 +5681,7 @@ end
 
 --- Remove a user from a server. The server parameter can be left blank if exactly one server is running.
 --- @param username string
---- @param server? server
+--- @param server? Server
 function cryptoNet.deleteUser(username, server)
 	if type(username) ~= "string" then
 		error("Username must be a string.", 2)
@@ -5711,7 +5711,7 @@ end
 
 --- Check if a user exists on the server. The server parameter can be left blank if exactly one server is running.
 --- @param username string
---- @param server? server
+--- @param server? Server
 --- @return boolean
 function cryptoNet.userExists(username, server)
 	if type(username) ~= "string" then
@@ -5736,7 +5736,7 @@ end
 
 --- Get the hashed password of a user from the users table. The original password cannot be (easily) retrieved from this hash. Returns nil if the user does not exist. The server parameter can be left blank if exactly one server is running.
 --- @param username string
---- @param server? server
+--- @param server? Server
 --- @return string|nil
 function cryptoNet.getPasswordHash(username, server)
 	if type(username) ~= "string" then
@@ -5764,7 +5764,7 @@ end
 
 --- Get the permission level of a user. Returns nil if the user does not exist. The server parameter can be left blank if exactly one server is running.
 --- @param username string
---- @param server? server
+--- @param server? Server
 --- @return number|nil
 function cryptoNet.getPermissionLevel(username, server)
 	if type(username) ~= "string" then
@@ -5793,7 +5793,7 @@ end
 --- Set the hashed password of a user in the table. Assumes the provided passowrd has already been hashed with hashPassword(). The server parameter can be left blank if exactly one server is running.
 --- @param username string
 --- @param passHash string
---- @param server server
+--- @param server Server
 function cryptoNet.setPasswordHashed(username, passHash, server)
 	if type(username) ~= "string" then
 		error("Username must be a string.", 2)
@@ -5828,7 +5828,7 @@ end
 --- Sets the password of a user in the table. The server parameter can be left blank if exactly one server is running.
 --- @param username string
 --- @param password string
---- @param server server
+--- @param server Server
 function cryptoNet.setPassword(username, password, server)
 	if type(username) ~= "string" then
 		error("Username must be a string.", 2)
@@ -5862,7 +5862,7 @@ end
 --- Set the permission level of a user in the table. The server parameter can be left blank if exactly one server is running.
 --- @param username string
 --- @param permissionLevel number
---- @param server server
+--- @param server Server
 function cryptoNet.setPermissionLevel(username, permissionLevel, server)
 	if type(username) ~= "string" then
 		error("Username must be a string.", 2)
@@ -5896,7 +5896,7 @@ end
 --- Check that the given password matches the one in the table. Assumes the password has already been hashed by hashPassword(). The server parameter can be left blank if exactly one server is running.
 --- @param username string
 --- @param passHash string
---- @param server server
+--- @param server Server
 --- @return boolean|nil
 function cryptoNet.checkPasswordHashed(username, passHash, server)
 	if type(username) ~= "string" then
@@ -5939,7 +5939,7 @@ end
 --- Check that the given password matches the one in the table. The server parameter can be left blank if exactly one server is running.
 --- @param username string
 --- @param password string
---- @param server server
+--- @param server Server
 --- @return boolean|nil
 function cryptoNet.checkPassword(username, password, server)
 	if type(username) ~= "string" then
@@ -5967,13 +5967,13 @@ function cryptoNet.checkPassword(username, password, server)
 end
 
 --- Log into the server connected to this socket, remote or local, with the specified username and password. Assumes the password has already been hashed by hashPassword(). If executed on a server socket, the event details of the attempt are returned. If successful, the user's details will be stored in the socket. If the socket is already logged in, the username will be overwritten but the permission level will be set to the highest of the old and new one. This allows an admin account to log in then log in as a normal user to temporarily gain elevated privileges as that account.
---- @param socket socket
+--- @param socket Socket
 --- @param username string
 --- @param passHash string
 --- @return string|nil
 --- @return string|nil
---- @return socket|nil
---- @return server|nil
+--- @return Socket|nil
+--- @return Server|nil
 function cryptoNet.loginHashed(socket, username, passHash)
 	if not cryptoNet.socketValid(socket) then
 		error("Invalid socket.", 2)
@@ -6019,13 +6019,13 @@ function cryptoNet.loginHashed(socket, username, passHash)
 end
 
 --- Log into the server connected to this socket, remote or local,with the specified username and password. The password will be hashed before sending for extra security.If executed on a server socket, the event details of the attempt are returned. If successful, the user's details will be stored in the socket. If the socket is already logged in, the username will be overwrittenbut the permission level will be set to the highest of the old and new one.This allows an admin account to log in then log in as a normal userto temporarily gain elevated privileges as that account.
---- @param socket socket
+--- @param socket Socket
 --- @param username string
 --- @param password string
 --- @return string|nil
 --- @return string|nil
---- @return socket|nil
---- @return server|nil
+--- @return Socket|nil
+--- @return Server|nil
 function cryptoNet.login(socket, username, password)
 	if not cryptoNet.socketValid(socket) then
 		error("Invalid socket.", 2)
@@ -6044,7 +6044,7 @@ function cryptoNet.login(socket, username, password)
 end
 
 --- Log out of the user account currently logged in on this socket. If executed on a server socket, the event details are returned.
---- @param socket socket|server
+--- @param socket Socket|Server
 function cryptoNet.logout(socket)
 	if not cryptoNet.socketValid(socket) then
 		error("Invalid socket.", 2)
@@ -6122,7 +6122,7 @@ end
 --- @param modemSide? string (default: a side that has a modem) The modem the server should use. certificate (table or string, default: "<serverName>.crt") The certificate of the server. This can either be the certificate table itself, or the name of a file that contains it. If the certicate and key files do not  exist, new ones will be generated and saved to the specified files.
 --- @param privateKey? table|string (default: "<serverName>_private.key") The private key of the server. This can either be the key table itself,  or the name of a file that contains it. If the certicate and key files do not  exist, new ones will be generated and saved to the specified files.
 --- @param userTablePath? string (default: "<serverName>_users.tbl") Path at which to store the user login details table,   if/when users are added to the server.
---- @return server # The server table
+--- @return Server # The server table
 function cryptoNet.host(serverName, discoverable, hideCertificate, modemSide, certificate, privateKey, userTablePath)
 	if type(serverName) ~= "string" then
 		error("Server name must be a string.", 2)
@@ -6279,7 +6279,7 @@ function cryptoNet.host(serverName, discoverable, hideCertificate, modemSide, ce
 end
 
 --- Close a socket or server, such that it will not listen for messages anymore. Closing a server closes all its sockets.
---- @param socket socket|server The socket or server to close.
+--- @param socket Socket|Server The socket or server to close.
 function cryptoNet.close(socket)
 	if cryptoNet.socketValid(socket) then
 		-- Let the other end of the socket know it has been closed.
@@ -6661,7 +6661,7 @@ end
 
 --- Request the certificates of all online CryptoNet servers on the network. Some servers may have been set to not respond to discovery requests, and some will only contain the server name in the certificate, excluding the public key required to connect to the server. This function can optionally use a certificate authority public key to verify the signatures of certificates, only returning certificates with valid signatures. By default discover() looks for the public key in "certAuth.key".
 --- @param timeout? number (default: 1) The time in seconds to spend listening for responses.
---- @param certAuthKey? publicKey|string (default: "certAuth.key") The certificate authority public key used to verify signatures,   or the path of the file to load it from. If no valid key is found   the discovery will still go ahead, but signatures will not be checked.
+--- @param certAuthKey? PublicKey|string (default: "certAuth.key") The certificate authority public key used to verify signatures,   or the path of the file to load it from. If no valid key is found   the discovery will still go ahead, but signatures will not be checked.
 --- @param allowUnsigned? boolean (default: false) Whether to include certificates with no valid signature in the results.   If no valid cert auth key is provided this is ignored, as the certificates   cannot be checked without a key.
 --- @param modemSide? string (default: a side with a modem) The modem to use to send and receive messages.
 --- @return table # a table of the certificates received, all of which will include the name of server and possibly also the public key and signature.
@@ -6756,7 +6756,7 @@ end
 --- @param certAuthKey? table|string (default: "certAuth.key") The certificate authority public key used to verify signatures,   or the path of the file to load it from. If no valid key is found   the request will still go ahead, but signatures will not be checked.
 --- @param allowUnsigned? boolean (default: false) Whether to accept certificates with no valid signature.   If no valid cert auth key is provided this is ignored, as the certificates cannot be checked without a key.
 --- @param modemSide? string (default: a side with a modem) The modem to use to send and receive messages.
---- @return certificate|nil # certificate of the server if exactly one is received, or nil if zero or more than one acceptable certificates are found.
+--- @return Certificate|nil # certificate of the server if exactly one is received, or nil if zero or more than one acceptable certificates are found.
 --- @return table # a table of all acceptable certificates received.
 function cryptoNet.requestCertificate(serverName, timeout, certAuthKey, allowUnsigned, modemSide)
 	if type(serverName) ~= "string" then
@@ -6870,7 +6870,7 @@ end
 --- @param modemSide? string (default: a side with a modem) The modem to use to send and receive messages.
 --- @param certAuthKey? table|string (default: "certAuth.key") The certificate authority public key used to verify signatures, or the path of the file to load it from. If no valid key is found the connection will still go ahead, but signatures will not be checked.
 --- @param allowUnsigned? boolean (default: false) Whether to accept certificates with no valid signature. If no valid cert auth key is provided this is ignored, as the certificates cannot be checked without a key. This does not apply to the certificate provided by the user (if present), which is never verified (we trust them to get their own certificate right), only to certificates received through a certificate request.
---- @return socket # a socket object that can be used to communicate with the server.
+--- @return Socket # a socket object that can be used to communicate with the server.
 function cryptoNet.connect(serverName, timeout, certTimeout, certificate, modemSide, certAuthKey, allowUnsigned)
 	if serverName ~= nil and type(serverName) ~= "string" then
 		error("Server name must be a string or nil.", 2)
@@ -7141,8 +7141,8 @@ function cryptoNet.initCertificateAuthority(publicFilename, privateFilename)
 end
 
 --- Sign a certificate using the certificate authority's private key. Both arguments can either be the certificate/key itself, or a path to a file that contains it. The signed certificate is returned, and written to the path the certificate was stored in, if it was loaded from file.
---- @param certificate certificate|string The certificate to sign, or the path to the file that contains it.
---- @param privateKey privateKey|string The private key to sign the certificate with, or the path to the file that contains it.
+--- @param certificate Certificate|string The certificate to sign, or the path to the file that contains it.
+--- @param privateKey PrivateKey|string The private key to sign the certificate with, or the path to the file that contains it.
 function cryptoNet.signCertificate(certificate, privateKey)
 	local certPath = nil
 	if type(certificate) == "string" then
@@ -7265,7 +7265,7 @@ end
 
 --* Class Definitions
 
---- @class socket
+--- @class Socket
 --- @field sender string The encrypted session key of this socket, which acts as the client's temporary identity to the server
 --- @field target string The name of the server
 --- @field key string The session key for this socket's session
@@ -7275,9 +7275,9 @@ end
 --- @field receivedMessages table The encrypted messages received by this socket, used to prevent replay attacks using duplicate messages. Every time a message is encrypted the encrypted version will be different due to randomness in the algorithm, so if the socket gets the exact same message twice it is probably a malicious duplicate.
 --- @field username string The username of the user logged into the socket, initialized to nil.
 
---- @class server
+--- @class Server
 --- @field name string The server name
---- @field certificate certificate The server's certificate
+--- @field certificate Certificate The server's certificate
 --- @field privateKey string The server's private key
 --- @field modemSide string The modem used by the server
 --- @field channel number The channel number the server communicates on
@@ -7285,10 +7285,10 @@ end
 --- @field discoverable boolean Whether the server responds to discover() requests
 --- @field userTable table The table of user login details for the server, loaded from file or empty by default
 --- @field userTablePath string The name of the user table file
---- @field sockets table<socket> The table of the server's sockets, used to communicate with clients. Starts empty and is populated as clients connect.
+--- @field sockets table<Socket> The table of the server's sockets, used to communicate with clients. Starts empty and is populated as clients connect.
 
 
---- @class certificate
+--- @class Certificate
 --- @field key string The public key of the certificate
 --- @field name string The name of the certificate
 --- @field public private string The private key of the certificate
@@ -7296,13 +7296,13 @@ end
 --- @field shared string The shared key of the certificate
 --- @field signature string The signature of the certificate
 
---- @class key
+--- @class Key
 --- @field shared string The public key of the certificate
 
---- @class privateKey : key
+--- @class PrivateKey : Key
 --- @field public private string The private key of the certificate
 
---- @class publicKey : key
+--- @class PublicKey : Key
 --- @field public public string The public key of the certificate
 
 return cryptoNet
